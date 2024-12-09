@@ -16,38 +16,31 @@ dynint dynint_init(const size_t c, const uint8_t* value) {
     return (dynint){size, data};
 }
 
-#define DYNINT_OPERATOR(name, op)                                                                                                     \
-    dynint dynint_##name(dynint a, dynint b) {                                                                                        \
-        const size_t size = ((a.size > b.size) ? a.size : b.size) + 1; /* get which dynint is larger, add one for carrying */         \
-        uint8_t* res = malloc(size);                                   /* allocate an array of bytes which will contain the result */ \
-        uint8_t buf = 0;                                               /* buffer byte, for carrying */                                \
-        dynint out = {0};                                              /* output */                                                   \
-                                                                                                                                      \
-        /* loop through the size of the result*/                                                                                      \
-        for (size_t i = 0; i < size; i++) {                                                                                           \
-            uint16_t tot = buf; /* set the total to the stored buffer */                                                              \
-                                                                                                                                      \
-            /* process the data if it is within the size */                                                                           \
-            if (i < a.size)                                                                                                           \
-                tot = tot != 0 ? tot op a.data[i] : a.data[i]; /* set the total to a's data, if tot is 0 */                           \
-            if (i < b.size)                                                                                                           \
-                tot op## = b.data[i];                                                                                                 \
-                                                                                                                                      \
-            res[i] = tot;   /* uin16 is implicitally truncated to uint8 */                                                            \
-            buf = tot >> 8; /* store the bits we missed. */                                                                           \
-        }                                                                                                                             \
-                                                                                                                                      \
-        /* if the remainder is 0, we don't need this final byte */                                                                    \
-        if (buf == 0)                                                                                                                 \
-            out = dynint_init(size - 1, res);                                                                                         \
-        else                                                                                                                          \
-            out = dynint_init(size, res);                                                                                             \
-        free(res);                                                                                                                    \
-        return out;                                                                                                                   \
+dynint dynint_add(dynint a, dynint b) {
+    const size_t size = ((a.size > b.size) ? a.size : b.size) + 1; // get which dynint is larger, add one for carrying
+    uint8_t* res = malloc(size);                                   // allocate an array of bytes which will contain the result
+    uint8_t buf = 0;                                               // buffer byte, for carrying
+    dynint out = {0};                                              // output
+
+    // loop through the size of the result
+    for (size_t i = 0; i < size; i++) {
+        uint16_t tot = buf;
+
+        // add the data if it is within the size
+        if (i < a.size)
+            tot += a.data[i];
+        if (i < b.size)
+            tot += b.data[i];
+
+        res[i] = tot;   // uin16 is implicitally truncated to uint8
+        buf = tot >> 8; // store the bits we missed.
     }
 
-DYNINT_OPERATOR(add, +)
-DYNINT_OPERATOR(sub, -)
-DYNINT_OPERATOR(div, /)
-DYNINT_OPERATOR(mlt, *)
-DYNINT_OPERATOR(mod, %)
+    // if the remainder is 0, we don't need this final byte
+    if (buf == 0)
+        out = dynint_init(size - 1, res);
+    else
+        out = dynint_init(size, res);
+    free(res);
+    return out;
+}
