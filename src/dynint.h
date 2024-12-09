@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -5,11 +6,12 @@
 typedef struct {
     size_t size;
     uint8_t* data;
+    bool neg;
 } dynint;
 
-dynint dynint_init(const size_t c, const uint8_t* value);
-dynint dynint_add(dynint a, dynint b);
-dynint dynint_sub(dynint a, dynint b);
-dynint dynint_div(dynint a, dynint b);
-dynint dynint_mlt(dynint a, dynint b);
-dynint dynint_mod(dynint a, dynint b);
+dynint dynint_init(const size_t c, const uint8_t* value, const bool neg);
+dynint dynint_add(const dynint a, const dynint b);
+dynint dynint_neg(const dynint a, const dynint b);
+dynint dynint_div(const dynint a, const dynint b);
+dynint dynint_mlt(const dynint a, const dynint b);
+dynint dynint_mod(const dynint a, const dynint b);
