@@ -9,9 +9,10 @@ typedef struct {
     bool neg;
 } dynint;
 
+void dynint_shrink(dynint* val);
 dynint dynint_init(const size_t c, const uint8_t* value, const bool neg);
 dynint dynint_add(const dynint a, const dynint b);
-dynint dynint_neg(const dynint a, const dynint b);
+dynint dynint_sub(const dynint a, const dynint b);
 dynint dynint_div(const dynint a, const dynint b);
 dynint dynint_mlt(const dynint a, const dynint b);
 dynint dynint_mod(const dynint a, const dynint b);

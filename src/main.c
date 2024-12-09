@@ -14,8 +14,8 @@ void print_dynint(dynint a, char c) {
 int main(int argc, char** argv) {
     uint64_t x = 0xFFFFFFFFFFFFFFFF;
     uint8_t y = 2;
-    dynint a = dynint_init(sizeof(long), (uint8_t*)&x);
-    dynint b = dynint_init(1, &y);
+    dynint a = dynint_init(sizeof(long), (uint8_t*)&x, false);
+    dynint b = dynint_init(1, &y, false);
     print_dynint(a, 'a');
     print_dynint(b, 'b');
 

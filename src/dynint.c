@@ -4,6 +4,18 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+
+// shrinks the space allocated to the binary integer to the least amount of size necessary.
+void dynint_shrink(dynint* val) {
+    size_t size = val->size;
+
+    while (size > 1 && val->data[size - 1] == 0)
+        size--;
+
+    // reallocate the data to the new size
+    val->data = realloc(val->data, size);
+}
 
 dynint dynint_init(const size_t c, const uint8_t* value, const bool neg) {
     // initial size is 1 or the smallest size of the inputted value
@@ -18,17 +30,6 @@ dynint dynint_init(const size_t c, const uint8_t* value, const bool neg) {
     dynint i = {size, data, neg};
     dynint_shrink(&i);
     return i;
-}
-
-// shrinks the space allocated to the binary integer to the least amount of size necessary.
-void dynint_shrink(dynint* val) {
-    size_t size = val->size;
-
-    while (size > 1 && val->data[size - 1] == 0)
-        size--;
-
-    // reallocate the data to the new size
-    val->data = realloc(val->data, size);
 }
 
 // adds a to b
@@ -55,7 +56,7 @@ dynint dynint_add(const dynint a, const dynint b) {
     if (buf == 0) {
         dynint out = dynint_init(size - 1, res, a.neg ^ b.neg);
         free(res);
-        return;
+        return out;
     }
 
     return (dynint){size, res, a.neg ^ b.neg};
@@ -70,7 +71,6 @@ dynint dynint_sub(const dynint a, const dynint b) {
 
 // multiplies a with b
 dynint dynint_mlt(const dynint a, const dynint b) {
-    const size_t msize = ((a.size > b.size) ? a.size : b.size);
     size_t size = a.size + b.size; // get which dynint is larger, add one for carrying (close to the worst-case scenario)
     uint8_t* res = malloc(size);   // allocate an array of bytes which will contain the result
 
@@ -88,8 +88,6 @@ dynint dynint_mlt(const dynint a, const dynint b) {
         }
     }
 
-    // remove leading zeroes to the point of one of the input sizes.
-    dynint_shrink(&res);
 
     dynint out = dynint_init(size, res, a.neg ^ b.neg);
     free(res);
@@ -98,5 +96,6 @@ dynint dynint_mlt(const dynint a, const dynint b) {
 
 // divide a by b
 dynint dynint_div(const dynint a, const dynint b) {
-    exit(-1);
+    fprintf(stderr, "\033[91mdynint_div is not implemented\033[0m\n");
+    exit(1);
 }
